@@ -25,6 +25,10 @@ class Document(object):
         pass
 
     def save(self, safe=True, *args, **kwargs):
+        """
+        Known issue:
+        OperationFailure: Can't extract geo keys: { _id: "d54b248ebd3f4644b88b353749a0b053", network_id: "citycycle", extra: { status: "OPEN", uid: 122, bonus: false, last_update: 1568721438000, banking: true, address: "Lower River Tce / Ellis St", slots: 16 }, location: { type: "Point", coordinates: [ -27.482279, 153.028723 ] }, name: "122 - LOWER RIVER TCE / ELLIS ST" }  longitude/latitude is out of bounds, lng: -27.4823 lat: 153.029
+        """
         return self.collection.save(self.data, safe, *args, **kwargs)
 
     def read(self, id):
@@ -79,8 +83,13 @@ class StationDocument(Document):
         if (station is not None and network_id is not None):
             self.data = {
                 '_id': station.get_hash(),
-                'latitude': station.latitude,
-                'longitude': station.longitude,
+                'location': {
+                    'type': 'Point',
+                    'coordinates': [
+                        station.latitude,
+                        station.longitude
+                    ]
+                },
                 'name': station.name,
                 'network_id': network_id,
                 'extra': station.extra
