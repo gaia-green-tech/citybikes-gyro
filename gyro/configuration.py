@@ -2,6 +2,8 @@ from os import environ
 
 db_credentials = {
     'host': environ.get('MONGODB_HOST', 'localhost'),
+    'user': environ.get('MONGODB_USER'),
+    'password': environ.get('MONGODB_PASSWORD'),
     'port': int(environ.get('MONGODB_PORT', 27017)),
     'database': environ.get('MONGODB_DATABASE', 'citybikes')
 }

@@ -9,11 +9,16 @@ import pybikes
 from gyro.configuration import db_credentials as credentials
 from gyro.configuration import redis_server
 from gyro.configuration import proxify as proxify_list
-from pymongo import Connection
+from pymongo import MongoClient
 from gyro.models import StationDocument, SystemDocument, Stat, StatDocument
 
-connection = Connection(credentials['host'], credentials['port'])
-db = getattr(connection, credentials['database'])
+auth = ''
+if credentials['user'] is not None:
+    auth = '%s:%s@' % (credentials['user'], credentials['password'])
+client = MongoClient('mongodb://%s%s:%i' %
+                     (auth, credentials['host'], credentials['port']))
+db = client[credentials['database']]
+connection = None
 pool = ConnectionPool(
     host=redis_server['host'],
     port=redis_server['port'],
